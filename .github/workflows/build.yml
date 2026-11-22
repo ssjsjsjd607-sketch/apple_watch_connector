@@ -45,6 +45,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.4'
           channel: 'stable'
 
       - name: Build Bridge and Companion
@@ -55,7 +56,7 @@ jobs:
           bash apple-watch-bridge/tool/build_magisk_module.sh apple-watch-bridge/app/build/outputs/apk/debug/app-debug.apk apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
           cd apple-watch-companion
           flutter pub get
-          flutter build apk --debug --android-skip-build-dependency-validation
+          flutter build apk --debug
           cd ..
 
       - name: Upload Files
