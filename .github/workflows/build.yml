@@ -50,6 +50,7 @@ jobs:
 
       - name: Build Bridge and Companion
         run: |
+          mkdir -p firmware/ios-26.6-23G71/extracted/VisualPairing
           cd apple-watch-bridge
           ./gradlew :app:assembleDebug
           cd ..
