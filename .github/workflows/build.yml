@@ -1,0 +1,49 @@
+name: Build Android APK and Bridge
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and Build Tools
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.1.0" "ndk;28.2.13676358"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build Bridge and Companion
+        run: |
+          cd apple-watch-companion
+          flutter pub get --enforce-lockfile
+          cd ..
+          python3 tools/build.py android
+          bash apple-watch-bridge/tool/build_magisk_module.sh apple-watch-bridge/app/build/outputs/apk/debug/app-debug.apk apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
+
+      - name: Upload Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-watch-android-files
+          path: |
+            apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
+            apple-watch-companion/build/app/outputs/flutter-apk/app-debug.apk
+            
