@@ -28,6 +28,8 @@ jobs:
           fi
           yes | "$SDKMANAGER" --licenses > /dev/null
           "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.1.0" "ndk;28.2.13676358"
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/28.2.13676358" >> $GITHUB_ENV
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -36,11 +38,14 @@ jobs:
 
       - name: Build Bridge and Companion
         run: |
+          cd apple-watch-bridge
+          ./gradlew :app:assembleDebug -x prepareOpticalAsset --stacktrace || ./gradlew :app:assembleDebug --stacktrace
+          cd ..
+          bash apple-watch-bridge/tool/build_magisk_module.sh apple-watch-bridge/app/build/outputs/apk/debug/app-debug.apk apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
           cd apple-watch-companion
           flutter pub get
+          flutter build apk --debug
           cd ..
-          python3 tools/build.py android
-          bash apple-watch-bridge/tool/build_magisk_module.sh apple-watch-bridge/app/build/outputs/apk/debug/app-debug.apk apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
 
       - name: Upload Files
         uses: actions/upload-artifact@v4
