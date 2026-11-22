@@ -37,7 +37,7 @@ jobs:
       - name: Build Bridge and Companion
         run: |
           cd apple-watch-companion
-          flutter pub get --enforce-lockfile
+          flutter pub get
           cd ..
           python3 tools/build.py android
           bash apple-watch-bridge/tool/build_magisk_module.sh apple-watch-bridge/app/build/outputs/apk/debug/app-debug.apk apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
