@@ -55,7 +55,7 @@ jobs:
           bash apple-watch-bridge/tool/build_magisk_module.sh apple-watch-bridge/app/build/outputs/apk/debug/app-debug.apk apple-watch-bridge/build/apple-watch-bridge-magisk-custom.zip
           cd apple-watch-companion
           flutter pub get
-          flutter build apk --debug
+          flutter build apk --debug --android-skip-build-dependency-validation
           cd ..
 
       - name: Upload Files
